@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能天体识别与科普助手 | AI 天文导游</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔭</text></svg>">
+</head>
+<body>
+
+  <!-- ==================== 区块一：顶部导航栏 ==================== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#home" class="nav-logo">
+        <span class="logo-icon">🔭</span>
+        <span class="logo-text">智能天体识别与科普助手</span>
+      </a>
+      <ul class="nav-menu">
+        <li><a href="#home" class="nav-link active">首页</a></li>
+        <li><a href="#experience" class="nav-link">识星体验</a></li>
+        <li><a href="#features" class="nav-link">项目特色</a></li>
+        <li><a href="#about" class="nav-link">关于项目</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==================== 区块二：Hero 英雄区域 ==================== -->
+  <section class="hero" id="home">
+    <canvas id="starCanvas" class="hero-canvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-badge">🏆 AI 创新创业项目 Demo</div>
+      <h1 class="hero-title">
+        <span class="gradient-text">拍一拍，知天文</span>
+      </h1>
+      <p class="hero-subtitle">AI 天体识别科普助手</p>
+      <p class="hero-desc">让每一次仰望星空，都能得到答案</p>
+      <div class="hero-cta-group">
+        <a href="#experience" class="btn-primary">
+          <span>✨ 立即体验识星</span>
+          <svg class="btn-arrow" viewBox="0 0 24 24" width="20" height="20"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" fill="currentColor"/></svg>
+        </a>
+        <a href="#features" class="btn-secondary">了解更多</a>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>向下探索</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ==================== 区块三：识星体验区 ==================== -->
+  <section class="experience" id="experience">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="title-icon">🌟</span>
+          识星体验
+          <span class="title-icon">🌟</span>
+        </h2>
+        <p class="section-subtitle">上传夜空照片，AI 帮你识别天体</p>
+      </div>
+
+      <!-- 在线/离线模式切换 -->
+      <div class="mode-switch-wrapper">
+        <span class="mode-label">当前模式：</span>
+        <div class="mode-toggle" id="modeToggle">
+          <span class="mode-option active" data-mode="online">🌐 在线精准识星</span>
+          <span class="mode-option" data-mode="offline">📡 离线基础识星</span>
+        </div>
+        <span class="mode-hint" id="modeHint">（联网增强识别精度 + Plate Solving 校准）</span>
+      </div>
+
+      <!-- 核心交互区 -->
+      <div class="experience-main">
+        <!-- 左侧：上传区域 -->
+        <div class="upload-panel">
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="imageInput" accept="image/*" hidden>
+            <div class="upload-content" id="uploadContent">
+              <div class="upload-icon">📸</div>
+              <p class="upload-text">拖拽星空照片到此处</p>
+              <p class="upload-hint">或 <span class="upload-link">点击选择文件</span></p>
+              <p class="upload-format">支持 JPG / PNG / WebP 格式</p>
+            </div>
+            <div class="upload-preview hidden" id="uploadPreview">
+              <img id="previewImage" src="" alt="预览图片" onerror="this.parentElement.parentElement.querySelector('.upload-content').classList.remove('hidden'); this.parentElement.classList.add('hidden');">
+              <button class="preview-remove" id="previewRemove">✕ 重新选择</button>
+            </div>
+          </div>
+
+          <!-- 识别按钮 -->
+          <button class="btn-recognize" id="btnRecognize" disabled>
+            <span class="btn-recognize-icon">🔍</span>
+            <span>开始识别</span>
+          </button>
+
+          <!-- 加载动画 -->
+          <div class="recognize-loading hidden" id="recognizeLoading">
+            <div class="loading-orbit">
+              <div class="orbit-ring"></div>
+              <div class="orbit-ring orbit-ring-2"></div>
+              <div class="orbit-center"></div>
+            </div>
+            <p class="loading-text">AI 正在分析星空...</p>
+          </div>
+        </div>
+
+        <!-- 右侧：识别结果展示 -->
+        <div class="result-panel hidden" id="resultPanel">
+          <div class="result-header">
+            <div class="result-name" id="resultName">--</div>
+            <div class="result-tag" id="resultTag">--</div>
+          </div>
+
+          <!-- 置信度 -->
+          <div class="confidence-bar-wrapper">
+            <div class="confidence-label">
+              <span>识别置信度</span>
+              <span class="confidence-value" id="confidenceValue">92%</span>
+            </div>
+            <div class="confidence-bar-bg">
+              <div class="confidence-bar-fill" id="confidenceBar" style="width: 92%"></div>
+            </div>
+          </div>
+
+          <!-- 知识卡片 -->
+          <div class="knowledge-card" id="knowledgeCard">
+            <div class="knowledge-card-header">
+              <span class="knowledge-icon">📖</span>
+              <span>天体小百科</span>
+            </div>
+            <p class="knowledge-description" id="knowledgeDesc">--</p>
+            <div class="knowledge-funfact">
+              <div class="funfact-badge">💡 冷知识</div>
+              <p id="funFactText">--</p>
+            </div>
+            <div class="knowledge-meta">
+              <div class="meta-item">
+                <span class="meta-label">📍 距离</span>
+                <span class="meta-value" id="metaDistance">--</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">🌙 最佳观测</span>
+                <span class="meta-value" id="metaSeason">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 重新识别 -->
+          <button class="btn-retry" id="btnRetry">
+            <span>🔄</span> 重新识别
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 区块四：项目特色亮点区 ==================== -->
+  <section class="features" id="features">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="title-icon">✨</span>
+          项目特色亮点
+          <span class="title-icon">✨</span>
+        </h2>
+        <p class="section-subtitle">三大核心优势，让观星变得简单有趣</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <span class="feature-icon">🔄</span>
+          </div>
+          <h3 class="feature-title">双模式识别引擎</h3>
+          <p class="feature-desc">
+            端侧快速识别 + 云端精准校准，两种模式自由切换。<br>
+            <strong>在线模式</strong>：调用 AI 大模型 + Plate Solving 天图解析<br>
+            <strong>离线模式</strong>：本地基础识别，无网络也能用
+          </p>
+          <div class="feature-tech-tags">
+            <span class="tech-tag">AI 图像识别</span>
+            <span class="tech-tag">Plate Solving</span>
+            <span class="tech-tag">端侧推理</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <span class="feature-icon">📚</span>
+          </div>
+          <h3 class="feature-title">权威天文知识库</h3>
+          <p class="feature-desc">
+            科普内容来源于中国天文学会、NASA 等权威机构。<br>
+            <strong>AI 只做转述，不做创作</strong>——从权威库取出标准答案，翻译成大白话、口语化、简短化，确保每条知识都准确可靠。
+          </p>
+          <div class="feature-tech-tags">
+            <span class="tech-tag">中国天文学会</span>
+            <span class="tech-tag">NASA 官方科普</span>
+            <span class="tech-tag">知识校验</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <span class="feature-icon">📡</span>
+          </div>
+          <h3 class="feature-title">户外离线也能用</h3>
+          <p class="feature-desc">
+            预置 88 个星座和亮星数据本地存储。<br>
+            观星常在野外或郊区，网络信号不稳定？<br>
+            <strong>离线包在手，基础识星随时可用</strong>，联网后自动升级至云端精准模式。
+          </p>
+          <div class="feature-tech-tags">
+            <span class="tech-tag">离线数据包</span>
+            <span class="tech-tag">88 星座</span>
+            <span class="tech-tag">亮星数据库</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 区块五：页脚信息区 ==================== -->
+  <footer class="footer" id="about">
+    <div class="section-container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <span class="footer-logo">🔭</span>
+          <div>
+            <h3 class="footer-title">智能天体识别与科普助手</h3>
+            <p class="footer-tagline">让每一次仰望星空，都能得到答案</p>
+          </div>
+        </div>
+        <div class="footer-links">
+          <div class="footer-link-group">
+            <h4>快速导航</h4>
+            <a href="#home">首页</a>
+            <a href="#experience">识星体验</a>
+            <a href="#features">项目特色</a>
+          </div>
+          <div class="footer-link-group">
+            <h4>技术方案</h4>
+            <a href="#features">双模式识别</a>
+            <a href="#features">权威知识库</a>
+            <a href="#features">离线可用</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">
+        <div class="footer-info">
+          <p>📌 AI 创新创业项目 Demo | 鲲鹏少年院</p>
+          <p>👨‍🎓 项目作者：陈思宇</p>
+          <p>📅 2026 年 5 月</p>
+        </div>
+        <p class="footer-copyright">© 2026 智能天体识别与科普助手 · 初中生 AI 创新创业项目</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 脚本 -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

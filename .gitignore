@@ -1,0 +1,19 @@
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 临时文件
+*.tmp
+*.log
+*.swp
+
+# 编辑器配置
+.vscode/
+.idea/
+
+# 解压的临时目录
+unpacked_docx/
+
+# Node modules (如有)
+node_modules/
